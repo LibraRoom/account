@@ -68,8 +68,36 @@ func (ph *PermissionsHandler) AddPermissions() echo.HandlerFunc {
 		response.Code = result.Code
 		response.Name = result.Name
 		return c.JSON(http.StatusCreated, map[string]any{
-			"message": "Success fetching all permission data",
+			"message": "Success add new permission",
 			"data":    result,
+		})
+	}
+}
+
+// DeletePermissions implements permissions.Handler.
+func (ph *PermissionsHandler) DeletePermissions() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		code := c.Param("code")
+		if code == "" {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "Invalid permission code",
+				"data":    nil,
+			})
+		}
+
+		errDel := ph.p.DeletePermissions(code)
+
+		if errDel != nil {
+			c.Logger().Error("ERROR Deleting Permissions, explain:", errDel.Error())
+			var statusCode = http.StatusInternalServerError
+			var message = "terjadi permasalahan ketika memproses data"
+
+			return c.JSON(statusCode, map[string]interface{}{
+				"message": message,
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]any{
+			"message": "Delete Permissions Success",
 		})
 	}
 }

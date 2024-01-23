@@ -2,6 +2,7 @@ package services
 
 import (
 	"account/features/permissions"
+	"fmt"
 )
 
 type PermissionsServices struct {
@@ -32,4 +33,14 @@ func (ps *PermissionsServices) AddPermissions(newPermission permissions.Permissi
 	}
 
 	return result, nil
+}
+
+// DeletePermissions implements permissions.Services.
+func (ps *PermissionsServices) DeletePermissions(code string) error {
+	err := ps.p.DeletePermissions(code)
+	if err != nil {
+		// Handle specific errors or add more information to the error message.
+		return fmt.Errorf("failed to delete permissions with code %s: %w", code, err)
+	}
+	return err
 }

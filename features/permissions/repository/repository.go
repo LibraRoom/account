@@ -14,7 +14,6 @@ type PermissionsModel struct {
 	Name     string    `bson:"name"`
 	CreateAt time.Time `bson:"create_at"`
 	UpdateAt time.Time `bson:"update_at"`
-	DeleteAt time.Time `bson:"delete_at"`
 }
 
 type PermissionsQuery struct {
@@ -64,4 +63,21 @@ func (pq *PermissionsQuery) AddPermissions(newPermission permissions.Permissions
 		return permissions.Permissions{}, err
 	}
 	return newPermission, nil
+}
+
+// DeletePermissions implements permissions.Repository.
+func (pq *PermissionsQuery) DeletePermissions(code string) error {
+	filter := bson.M{"_id": code}
+
+	result, err := pq.db.Collection(pq.collection).DeleteMany(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+
+	// Check if any documents were deleted
+	if result.DeletedCount == 0 {
+		return err
+	}
+
+	return nil
 }

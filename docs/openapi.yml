@@ -10,6 +10,8 @@ paths:
       summary: "Get All Permission"
       tags:
         - "Permission"
+      security:
+        - bearerAuth: []
       responses:
         "200":
           $ref: "#/components/responses/permission_get_all_200"
@@ -25,6 +27,8 @@ paths:
       summary: "Create Permission"
       tags:
         - "Permission"
+      security:
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/permission_create"
       responses:
@@ -47,6 +51,8 @@ paths:
       summary: "Update Permission"
       tags:
         - "Permission"
+      security:
+        - bearerAuth: []
       requestBody:
         $ref: "#/components/requestBodies/permission_update"
       parameters:
@@ -70,6 +76,8 @@ paths:
       summary: "Delete Permission"
       tags:
         - "Permission"
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/permission_code"
       responses:
@@ -88,36 +96,117 @@ paths:
   
   /roles:
     get:
+      summary: "Get All Role"
       tags:
         - "Role"
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/role_all_page"
+        - $ref: "#/components/parameters/role_all_pageSize"
+        - $ref: "#/components/parameters/role_all_name"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/role_get_all_200"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/default_404"
+        "500":
+          $ref: "#/components/responses/default_500"
     post:
+      summary: "Create Role"
       tags:
         - "Role"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/role_create"
       responses:
-        '200':
-          description: OK       
+        "201":
+          $ref: "#/components/responses/role_create_201"
+        "400":
+          $ref: "#/components/responses/role_create_400"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/default_404"
+        "409":
+          $ref: "#/components/responses/role_create_409"
+        "500":
+          $ref: "#/components/responses/default_500"    
   /roles/{code}:
     get:
+      summary: "Get Role by Code"
       tags:
         - "Role"
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/role_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/role_get_code_200"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/default_404"
+        "500":
+          $ref: "#/components/responses/default_500"
     patch:
+      summary: "Update Role"
       tags:
         - "Role"
+      security:
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/role_update"
+      parameters:
+        - $ref: "#/components/parameters/role_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/role_update_200"
+        "400":
+          $ref: "#/components/responses/role_update_400"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/role_update_404"
+        "409":
+          $ref: "#/components/responses/role_update_409"
+        "500":
+          $ref: "#/components/responses/default_500"
     delete:
+      summary: "Delete Role"      
       tags:
         - "Role"
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/role_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/role_update_200"
+        "400":
+          $ref: "#/components/responses/role_update_400"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/role_update_404"
+        "409":
+          $ref: "#/components/responses/role_update_409"
+        "500":
+          $ref: "#/components/responses/default_500"
   
   /signup:
     post:
@@ -245,7 +334,11 @@ components:
                   - $ref: "#/components/schemas/permission"
                   - $ref: "#/components/schemas/role"
                   - $ref: "#/components/schemas/user"
-  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     permission_code:
       in: path
@@ -253,6 +346,33 @@ components:
       required: true
       schema:
         type: string
+    role_code:
+      in: path
+      name: code
+      required: true
+      schema:
+        type: string
+    role_all_page:
+      in: query
+      name: page
+      required: false
+      schema:
+          type: integer
+          example: 1
+    role_all_pageSize:
+      in: query
+      name: pagesize
+      required: false
+      schema:
+          type: integer
+          example: 1
+    role_all_name:
+      in: query
+      name: name_role
+      required: true
+      schema:
+          type: string
+          example: 'SuperUser'
 
   requestBodies:
     permission_create:
@@ -273,6 +393,25 @@ components:
             $ref: "#/components/schemas/permission"
           example:
             name: "user delete"
+
+    role_create:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/role"
+          example:
+            code: "superUser.create"
+            name: "superUser create"
+  
+    role_update:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/role"
+          example:
+            name: "superUser create"
 
   responses:
     default_401:
@@ -321,7 +460,6 @@ components:
                 name: "user get all"
               - code: "user.delete"
                 name: "user delete"
-
     permission_create_201:
       description: "success"
       content:
@@ -404,3 +542,115 @@ components:
             $ref: "#/components/schemas/default_response"
           example:
             message: "resource in use"
+
+    role_create_201:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "create role success"
+    role_create_400:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "please fill input correctly"
+    role_create_409:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "code already exist"
+    role_update_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "delete role success"
+    role_update_400:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "please fill input correctly"
+    role_update_404:
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "role not found"
+    role_update_409:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "code already exist"
+    role_delete_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "delete role success"
+    role_delete_404:
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "role not found"
+    role_delete_409:
+      description: "conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "resource in use"
+    role_get_all_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "get all role success"
+            data:
+              - code: "superUser.create"
+                name: "superUser create"
+              - code: "user.delete"
+                name: "user delete"
+    role_get_code_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "get role success"
+            data:
+              role:
+                - code: "superUser.create"
+                  name: "superUser create"
+                  permissions:
+                  - code: "user.get-all"
+                    name: "user get all"
+                  - code: "user.write-all"
+                    name: "user write all"
+

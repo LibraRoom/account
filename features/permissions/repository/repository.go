@@ -50,3 +50,18 @@ func (pq *PermissionsQuery) GetAllPermissions() ([]permissions.Permissions, erro
 	}
 	return result, nil
 }
+
+// AddPermissions implements permissions.Repository.
+func (pq *PermissionsQuery) AddPermissions(newPermission permissions.Permissions) (permissions.Permissions, error) {
+	var inputData = new(PermissionsModel)
+	inputData.Code = newPermission.Code
+	inputData.Name = newPermission.Name
+	inputData.CreateAt = time.Now()
+	inputData.UpdateAt = time.Now()
+
+	_, err := pq.db.Collection(pq.collection).InsertOne(context.Background(), inputData)
+	if err != nil {
+		return permissions.Permissions{}, err
+	}
+	return newPermission, nil
+}

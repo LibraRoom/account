@@ -23,3 +23,13 @@ func (ps *PermissionsServices) GetAllPermissions() ([]permissions.Permissions, e
 
 	return result, nil
 }
+
+// AddPermissions implements permissions.Services.
+func (ps *PermissionsServices) AddPermissions(newPermission permissions.Permissions) (permissions.Permissions, error) {
+	result, err := ps.p.AddPermissions(newPermission)
+	if err != nil {
+		return permissions.Permissions{}, err
+	}
+
+	return result, nil
+}

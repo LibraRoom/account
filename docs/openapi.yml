@@ -7,30 +7,84 @@ servers:
 paths:
   /permissions:
     get:
+      summary: "Get All Permission"
       tags:
         - "Permission"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/permission_get_all_200"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/default_404"
+        "500":
+          $ref: "#/components/responses/default_500"
     post:
+      summary: "Create Permission"
       tags:
         - "Permission"
+      requestBody:
+        $ref: "#/components/requestBodies/permission_create"
       responses:
-        '200':
-          description: OK
+        "201":
+          $ref: "#/components/responses/permission_create_201"
+        "400":
+          $ref: "#/components/responses/permission_create_400"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/default_404"
+        "409":
+          $ref: "#/components/responses/permission_create_409"
+        "500":
+          $ref: "#/components/responses/default_500"
   /permissions/{code}:
     patch:
+      summary: "Update Permission"
       tags:
         - "Permission"
+      requestBody:
+        $ref: "#/components/requestBodies/permission_update"
+      parameters:
+        - $ref: "#/components/parameters/permission_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/permission_update_200"
+        "400":
+          $ref: "#/components/responses/permission_update_400"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/permission_update_404"
+        "409":
+          $ref: "#/components/responses/permission_update_409"
+        "500":
+          $ref: "#/components/responses/default_500"
     delete:
+      summary: "Delete Permission"
       tags:
         - "Permission"
+      parameters:
+        - $ref: "#/components/parameters/permission_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/permission_delete_200"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/permission_delete_404"
+        "409":
+          $ref: "#/components/responses/permission_delete_409"
+        "500":
+          $ref: "#/components/responses/default_500"
   
   /roles:
     get:
@@ -192,6 +246,34 @@ components:
                   - $ref: "#/components/schemas/role"
                   - $ref: "#/components/schemas/user"
   
+  parameters:
+    permission_code:
+      in: path
+      name: code
+      required: true
+      schema:
+        type: string
+
+  requestBodies:
+    permission_create:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/permission"
+          example:
+            code: "user.delete"
+            name: "user delete"
+
+    permission_update:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/permission"
+          example:
+            name: "user delete"
+
   responses:
     default_401:
       description: "unauthorized"
@@ -225,3 +307,100 @@ components:
             $ref: "#/components/schemas/default_response"
           example:
             message: "internal server error"
+    
+    permission_get_all_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "get all permission success"
+            data:
+              - code: "user.get-all"
+                name: "user get all"
+              - code: "user.delete"
+                name: "user delete"
+
+    permission_create_201:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "create permission success"
+    permission_create_400:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "please fill input correctly"
+    permission_create_409:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "code already exist"
+    
+    permission_update_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "update permission success"
+    permission_update_400:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "please fill input correctly"
+    permission_update_404:
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "permission not found"
+    permission_update_409:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "code already exist"
+
+    permission_delete_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "delete permission success"
+    permission_delete_404:
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "permission not found"
+    permission_delete_409:
+      description: "conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "resource in use"

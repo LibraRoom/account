@@ -219,9 +219,13 @@ paths:
     post:
       tags:
         - "User"
+      requestBody:
+        $ref: "#/components/requestBodies/user_signin"
       responses:
-        '200':
-          description: OK
+        "201":
+          $ref: "#/components/responses/user_signin_201"
+        "400":
+          $ref: "#/components/responses/user_signin_400"
   /verify:
     post:
       tags:
@@ -241,6 +245,8 @@ paths:
     get:
       tags:
         - "User"
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: OK
@@ -248,21 +254,39 @@ paths:
     get:
       tags:
         - "User"
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: OK
     patch:
       tags:
         - "User"
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: OK
     delete:
       tags:
         - "User"
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/user_code"
       responses:
-        '200':
-          description: OK
+        "200":
+          $ref: "#/components/responses/user_delete_200"
+        "401":
+          $ref: "#/components/responses/default_401"
+        "403":
+          $ref: "#/components/responses/default_403"
+        "404":
+          $ref: "#/components/responses/user_delete_404"
+        "409":
+          $ref: "#/components/responses/user_delete_409"
+        "500":
+          $ref: "#/components/responses/default_500"
 
 components:
   schemas:
@@ -373,6 +397,12 @@ components:
       schema:
           type: string
           example: 'SuperUser'
+    user_code:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
 
   requestBodies:
     permission_create:
@@ -412,6 +442,16 @@ components:
             $ref: "#/components/schemas/role"
           example:
             name: "superUser create"
+    
+    user_signin:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/user"
+          example:
+            email: "admin@gmail.com"
+            password: "admin123"
 
   responses:
     default_401:
@@ -649,8 +689,69 @@ components:
                 - code: "superUser.create"
                   name: "superUser create"
                   permissions:
-                  - code: "user.get-all"
-                    name: "user get all"
+                  - code: "superUser.get-all"
+                    name: "superUser get all"
                   - code: "user.write-all"
                     name: "user write all"
+    user_signin_201:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "login success"
+            data:
+              user:
+                - id: '1'
+                  name: 'admin'
+                  email: 'admin@gmail.com'
+                  token: 'eyJhbGciOiJIUzI1NiIsInR5'
+                  role_default:
+                      code: "superUser.create"
+                      name: "superUser create"
+                      permissions:
+                      - code: "superUser.get-all"
+                        name: "superUser get all"
+                  roles:
+                      code: "superUser.create"
+                      name: "superUser create"
+                      permissions:
+                      - code: "superUser.get-all"
+                        name: "superUser get all"
+                  permission:
+                        code: "superUser.get-all"
+                        name: "superUser get all"
+    user_signin_400:
+      description: "bad request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "please fill input correctly"
+    user_delete_200:
+      description: "success"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "delete user success"
+    user_delete_404:
+      description: "not found"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "user not found"
+    user_delete_409:
+      description: "conflict"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/default_response"
+          example:
+            message: "resource in use"
 

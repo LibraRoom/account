@@ -3,10 +3,12 @@ package repository
 import (
 	"account/features/permissions"
 	"context"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type PermissionsModel struct {
@@ -74,10 +76,33 @@ func (pq *PermissionsQuery) DeletePermissions(code string) error {
 		return err
 	}
 
-	// Check if any documents were deleted
 	if result.DeletedCount == 0 {
 		return err
 	}
 
 	return nil
+}
+
+// UpdatePermissions implements permissions.Repository.
+func (pq *PermissionsQuery) UpdatePermissions(code string, input permissions.Permissions) (permissions.Permissions, error) {
+	filter := bson.M{"_id": code}
+
+	update := bson.M{}
+	if input.Name != "" {
+		update["name"] = input.Name
+	}
+	update["update_at"] = time.Now()
+
+	options := options.Update().SetUpsert(true)
+
+	updateResult, err := pq.db.Collection(pq.collection).UpdateOne(context.TODO(), filter, bson.M{"$set": update}, options)
+	if err != nil {
+		return permissions.Permissions{}, err
+	}
+
+	if updateResult.ModifiedCount == 0 {
+		return permissions.Permissions{}, errors.New("no documents were modified")
+	}
+
+	return input, nil
 }

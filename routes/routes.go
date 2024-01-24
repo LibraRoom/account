@@ -19,4 +19,5 @@ func routePermissions(e *echo.Echo, ph permissions.Handler) {
 	e.GET("/permissions", ph.GetAllPermissions())
 	e.POST("/permissions", ph.AddPermissions())
 	e.DELETE("/permissions/:code", ph.DeletePermissions())
+	e.PATCH("/permissions/:code", ph.UpdatePermissions())
 }

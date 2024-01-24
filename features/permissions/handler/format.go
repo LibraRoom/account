@@ -5,7 +5,11 @@ type PermissionsRequest struct {
 	Name string `json:"name"`
 }
 
+type PermissionsPutRequest struct {
+	Name string `json:"name"`
+}
+
 type PermissionsResponse struct {
-	Code string `json:"code"`
+	Code string `json:"code" bson:"_id"`
 	Name string `json:"name"`
 }

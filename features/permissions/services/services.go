@@ -2,6 +2,7 @@ package services
 
 import (
 	"account/features/permissions"
+	"errors"
 	"fmt"
 )
 
@@ -43,4 +44,14 @@ func (ps *PermissionsServices) DeletePermissions(code string) error {
 		return fmt.Errorf("failed to delete permissions with code %s: %w", code, err)
 	}
 	return err
+}
+
+// UpdatePermissions implements permissions.Services.
+func (ps *PermissionsServices) UpdatePermissions(code string, input permissions.Permissions) (permissions.Permissions, error) {
+	result, err := ps.p.UpdatePermissions(code, input)
+	if err != nil {
+		return permissions.Permissions{}, errors.New("failed to update the product")
+	}
+
+	return result, nil
 }

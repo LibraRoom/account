@@ -60,7 +60,7 @@ func (ph *PermissionsHandler) AddPermissions() echo.HandlerFunc {
 		result, err := ph.p.AddPermissions(*inputProcess)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{
-				"massage": "Failed to add Permissions",
+				"message": "Failed to add Permissions Duplicate Input",
 			})
 		}
 
@@ -98,6 +98,45 @@ func (ph *PermissionsHandler) DeletePermissions() echo.HandlerFunc {
 		}
 		return c.JSON(http.StatusOK, map[string]any{
 			"message": "Delete Permissions Success",
+		})
+	}
+}
+
+// UpdatePermissions implements permissions.Handler.
+func (ph *PermissionsHandler) UpdatePermissions() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var inputData = new(PermissionsPutRequest)
+		code := c.Param("code")
+		if code == "" {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "Invalid permission code",
+				"data":    nil,
+			})
+		}
+
+		if err := c.Bind(inputData); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"message": "input yang diberikan tidak sesuai",
+				"data":    nil,
+			})
+		}
+
+		updatePermission := permissions.Permissions{
+			Name: inputData.Name,
+		}
+
+		result, err := ph.p.UpdatePermissions(code, updatePermission)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"message": "Failed to update Permissions Duplicate Input",
+			})
+		}
+		var response = new(PermissionsResponse)
+		response.Code = result.Code
+		response.Name = result.Name
+		return c.JSON(http.StatusCreated, map[string]any{
+			"message": "Success Update permission Data",
+			"data":    result,
 		})
 	}
 }
